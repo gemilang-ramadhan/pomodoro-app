@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Beautiful Pomodoro Timer</title>
+        <title>Pomodoro Timer</title>
 
         <link href="./src/output.css" rel="stylesheet" />
 
@@ -48,117 +48,163 @@
 
             @media (max-width: 768px) {
                 .timer-svg {
-                    width: 150px;
-                    height: 150px;
+                    opacity: 0;
                 }
             }
         </style>
         <!-- Font Awesome Kit -->
         <script src="https://kit.fontawesome.com/ef065ba207.js" crossorigin="anonymous"></script>
+        <!-- SortableJS for Drag-and-Drop -->
+        <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     </head>
 
     <body class="bg-gray-100 dark:bg-darkBg flex items-center justify-center min-h-screen transition-colors duration-500">
-        <!-- Container -->
-        <div class="bg-white dark:bg-darkCard shadow-2xl rounded-3xl p-8 max-w-md w-full transition-colors duration-500">
-            <!-- Header -->
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold text-primary dark:text-white">Pomodoro Timer</h1>
-                <div class="flex space-x-2">
-                    <!-- Mute/Unmute Button -->
-                    <button id="muteToggle" class="mute-btn text-gray-700 dark:text-gray-300 focus:outline-none text-2xl p-2 rounded-full transition-transform" aria-label="Mute/Unmute Sound">
-                        <i class="fas fa-volume-up"></i>
-                    </button>
-                    <!-- Dark Mode Toggle Button -->
-                    <button id="themeToggle" class="theme-toggle-btn text-gray-700 dark:text-gray-300 focus:outline-none text-2xl p-2 rounded-full transition-transform" aria-label="Toggle Theme">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Settings Row -->
-            <div class="flex justify-around mb-6">
-                <!-- Work Duration -->
-                <div class="text-center">
-                    <label for="pomodoro" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Work</label>
-                    <input type="number" id="pomodoro" min="1" max="60" value="25" class="mt-1 block w-20 mx-auto p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-primary focus:border-primary text-center dark:bg-gray-700 dark:text-white" aria-label="Set work duration in minutes" />
-                    <span class="text-sm text-gray-500 dark:text-gray-400">minutes</span>
-                </div>
-
-                <!-- Short Break Duration -->
-                <div class="text-center">
-                    <label for="break" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Break</label>
-                    <input type="number" id="break" min="1" max="30" value="5" class="mt-1 block w-20 mx-auto p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-secondary focus:border-secondary text-center dark:bg-gray-700 dark:text-white" aria-label="Set break duration in minutes" />
-                    <span class="text-sm text-gray-500 dark:text-gray-400">minutes</span>
-                </div>
-
-                <!-- Long Break Duration -->
-                <div class="text-center">
-                    <label for="longBreak" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Long Break</label>
-                    <input type="number" id="longBreak" min="1" max="60" value="15" class="mt-1 block w-20 mx-auto p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-secondary focus:border-secondary text-center dark:bg-gray-700 dark:text-white" aria-label="Set long break duration in minutes" />
-                    <span class="text-sm text-gray-500 dark:text-gray-400">minutes</span>
-                </div>
-            </div>
-
-            <!-- Timer Circle -->
-            <div class="flex items-center justify-center mb-6">
-                <div class="relative">
-                    <svg class="timer-svg transform -rotate-90 transition-all duration-500">
-                        <circle cx="100" cy="100" r="90" stroke="#E5E7EB" stroke-width="15" fill="none"></circle>
-                        <circle
-                            id="progress"
-                            cx="100"
-                            cy="100"
-                            r="90"
-                            stroke="url(#gradient)"
-                            stroke-width="15"
-                            fill="none"
-                            stroke-linecap="round"
-                            stroke-dasharray="565"
-                            stroke-dashoffset="0"
-                            class="transition-all duration-1000 ease-linear"
-                        ></circle>
-                        <defs>
-                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#4F46E5"></stop>
-                                <stop offset="100%" stop-color="#F59E0B"></stop>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                    <div class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
-                        <span id="timer" class="text-4xl font-semibold text-gray-800 dark:text-white">25:00</span>
-                        <span id="session" class="text-sm text-gray-500 dark:text-gray-300">Work</span>
+        <!-- Main Container with Flex Layout -->
+        <div class="flex flex-col md:flex-row bg-white dark:bg-darkCard shadow-2xl rounded-3xl p-8 max-w-5xl w-full space-y-8 md:space-y-0 md:space-x-8 transition-colors duration-500">
+            <!-- Pomodoro Timer Section -->
+            <div class="flex-1">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-3xl font-bold text-primary dark:text-white">Pomodoro Timer</h1>
+                    <div class="flex space-x-2">
+                        <!-- Mute/Unmute Button -->
+                        <button id="muteToggle" class="mute-btn text-gray-700 dark:text-gray-300 focus:outline-none text-2xl p-2 rounded-full transition-transform" aria-label="Mute/Unmute Sound">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <!-- Dark Mode Toggle Button -->
+                        <button id="themeToggle" class="theme-toggle-btn text-gray-700 dark:text-gray-300 focus:outline-none text-2xl p-2 rounded-full transition-transform" aria-label="Toggle Theme">
+                            <i class="fas fa-moon"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Controls -->
-            <div class="flex justify-center space-x-4 mb-4">
-                <button id="startPause" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-indigo-600 focus:outline-none flex items-center transition-transform hover:scale-105">
-                    <i class="fas fa-play mr-2"></i>
-                    <span>Start</span>
-                </button>
-                <button id="reset" class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus:outline-none flex items-center transition-transform hover:scale-105">
-                    <i class="fas fa-redo mr-2"></i>
-                    <span>Reset</span>
-                </button>
-            </div>
+                <!-- Settings Row -->
+                <div class="flex justify-around mb-6">
+                    <!-- Work Duration -->
+                    <div class="text-center">
+                        <label for="pomodoro" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Work</label>
+                        <div class="flex items-center mt-1">
+                            <button id="decreasePomodoro" class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 p-2 rounded-l-md focus:outline-none hover:bg-gray-300 dark:hover:bg-gray-500">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="text" id="pomodoro" readonly value="25" class="w-16 p-2 text-center border-t border-b border-gray-300 dark:border-gray-600 focus:outline-none dark:bg-gray-700 dark:text-white" aria-label="Set work duration in minutes" />
+                            <button id="increasePomodoro" class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 p-2 rounded-r-md focus:outline-none hover:bg-gray-300 dark:hover:bg-gray-500">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <span class="text-sm text-gray-500 dark:text-gray-400">minutes</span>
+                    </div>
 
-            <!-- Session Count and Info Button -->
-            <div class="flex justify-between items-center mb-4">
-                <div class="text-sm text-gray-500 dark:text-gray-400">Completed Sessions: <span id="sessionCount">0</span></div>
-                <div>
-                    <button id="infoButton" class="text-gray-700 dark:text-gray-300 focus:outline-none text-xl p-2 rounded transition-transform hover:scale-110" aria-label="Information">
-                        <i class="fas fa-info-circle"></i>
+                    <!-- Short Break Duration -->
+                    <div class="text-center">
+                        <label for="break" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Break</label>
+                        <div class="flex items-center mt-1">
+                            <button id="decreaseBreak" class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 p-2 rounded-l-md focus:outline-none hover:bg-gray-300 dark:hover:bg-gray-500">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="text" id="break" readonly value="5" class="w-16 p-2 text-center border-t border-b border-gray-300 dark:border-gray-600 focus:outline-none dark:bg-gray-700 dark:text-white" aria-label="Set break duration in minutes" />
+                            <button id="increaseBreak" class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 p-2 rounded-r-md focus:outline-none hover:bg-gray-300 dark:hover:bg-gray-500">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <span class="text-sm text-gray-500 dark:text-gray-400">minutes</span>
+                    </div>
+
+                    <!-- Long Break Duration -->
+                    <div class="text-center">
+                        <label for="longBreak" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Long Break</label>
+                        <div class="flex items-center mt-1">
+                            <button id="decreaseLongBreak" class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 p-2 rounded-l-md focus:outline-none hover:bg-gray-300 dark:hover:bg-gray-500">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="text" id="longBreak" readonly value="15" class="w-16 p-2 text-center border-t border-b border-gray-300 dark:border-gray-600 focus:outline-none dark:bg-gray-700 dark:text-white" aria-label="Set long break duration in minutes" />
+                            <button id="increaseLongBreak" class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 p-2 rounded-r-md focus:outline-none hover:bg-gray-300 dark:hover:bg-gray-500">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <span class="text-sm text-gray-500 dark:text-gray-400">minutes</span>
+                    </div>
+                </div>
+
+                <!-- Timer Circle -->
+                <div class="flex items-center justify-center mb-6">
+                    <div class="relative">
+                        <svg class="timer-svg transform -rotate-90 transition-all duration-500 ">
+                            <circle cx="100" cy="100" r="90" stroke="#E5E7EB" stroke-width="15" fill="none"></circle>
+                            <circle
+                                id="progress"
+                                cx="100"
+                                cy="100"
+                                r="90"
+                                stroke="url(#gradient)"
+                                stroke-width="15"
+                                fill="none"
+                                stroke-linecap="round"
+                                stroke-dasharray="565"
+                                stroke-dashoffset="0"
+                                class="transition-all duration-1000 ease-linear"
+                            ></circle>
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#4F46E5"></stop>
+                                    <stop offset="100%" stop-color="#F59E0B"></stop>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+                            <span id="timer" class="text-4xl font-semibold text-gray-800 dark:text-white">25:00</span>
+                            <span id="session" class="text-sm text-gray-500 dark:text-gray-300">Work</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex justify-center space-x-4 mb-4">
+                    <button id="startPause" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-indigo-600 focus:outline-none flex items-center transition-transform hover:scale-105">
+                        <i class="fas fa-play mr-2"></i>
+                        <span>Start</span>
                     </button>
+                    <button id="reset" class="bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 focus:outline-none flex items-center transition-transform hover:scale-105">
+                        <i class="fas fa-redo mr-2"></i>
+                        <span>Reset</span>
+                    </button>
+                </div>
+
+                <!-- Session Count and Info Button -->
+                <div class="flex justify-between items-center mb-4">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Completed Sessions: <span id="sessionCount">0</span></div>
+                    <div>
+                        <button id="infoButton" class="text-gray-700 dark:text-gray-300 focus:outline-none text-xl p-2 rounded transition-transform hover:scale-110" aria-label="Information">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Session History -->
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Session History</h2>
+                    <ul id="sessionHistory" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md">
+                        <!-- Dynamically populated session history -->
+                    </ul>
                 </div>
             </div>
 
-            <!-- Session History -->
-            <div class="mb-6">
-                <h2 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Session History</h2>
-                <ul id="sessionHistory" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md">
-                    <!-- Dynamically populated session history -->
-                </ul>
+            <!-- To-Do List Section -->
+            <div class="flex-1">
+                <div class="bg-white dark:bg-darkCard shadow-2xl rounded-3xl p-8 max-w-md w-full transition-colors duration-500">
+                    <h2 class="text-2xl font-bold text-primary dark:text-white mb-4">To-Do List</h2>
+                    <!-- Add Task -->
+                    <div class="flex mb-4">
+                        <input type="text" id="newTaskInput" placeholder="Add a new task" class="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-l-md focus:outline-none dark:bg-gray-700 dark:text-white" aria-label="New task input" />
+                        <button id="addTaskButton" class="bg-primary text-white p-2 rounded-r-md hover:bg-indigo-600 focus:outline-none">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <!-- Task List -->
+                    <ul id="taskList" class="space-y-2">
+                        <!-- Dynamically populated tasks -->
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -173,395 +219,13 @@
                     1. Set your desired <strong>Work</strong>, <strong>Break</strong>, and <strong>Long Break</strong> durations.<br />
                     2. Click "Start" to begin the timer. The app will automatically switch between work and break sessions, and after 4 work sessions, you'll get a long break.<br />
                     3. Use the theme toggle to switch between light and dark modes.<br />
-                    4. Use the mute button to toggle sounds.
+                    4. Use the mute button to toggle sounds.<br />
+                    5. Manage your tasks using the To-Do List on the right.
                 </p>
             </div>
         </div>
 
         <!-- JavaScript -->
-        <script>
-            // DOM Elements
-            const startPauseButton = document.getElementById("startPause");
-            const resetButton = document.getElementById("reset");
-            const timerDisplay = document.getElementById("timer");
-            const sessionDisplay = document.getElementById("session");
-            const progressCircle = document.getElementById("progress");
-
-            const pomodoroInput = document.getElementById("pomodoro");
-            const breakInput = document.getElementById("break");
-            const longBreakInput = document.getElementById("longBreak");
-
-            const sessionCountDisplay = document.getElementById("sessionCount");
-            const sessionHistory = document.getElementById("sessionHistory");
-
-            const themeToggle = document.getElementById("themeToggle");
-            const muteToggle = document.getElementById("muteToggle");
-            const infoButton = document.getElementById("infoButton");
-            const infoModal = document.getElementById("infoModal");
-            const closeModal = document.getElementById("closeModal");
-            const modalContent = document.getElementById("modalContent");
-
-            // State Variables
-            let isRunning = false;
-            let isWorkSession = true;
-            let timer;
-            let totalTime;
-            let timeLeft;
-
-            let pomodoroDuration = parseInt(pomodoroInput.value) * 60; // in seconds
-            let breakDuration = parseInt(breakInput.value) * 60; // in seconds
-            let longBreakDuration = parseInt(longBreakInput.value) * 60; // in seconds
-
-            let sessionCount = 0; // number of completed work sessions
-            let cycleCount = 0; // tracks how many work sessions have happened consecutively
-
-            let isMuted = false;
-
-            // Sound Effects
-            const workEndSound = new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3");
-            const breakEndSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
-
-            // ----------------------------------------------------------------------
-            // Load Settings from localStorage
-            // ----------------------------------------------------------------------
-            function loadSettings() {
-                const storedPomodoro = localStorage.getItem("pomodoroDuration");
-                const storedBreak = localStorage.getItem("breakDuration");
-                const storedLongBreak = localStorage.getItem("longBreakDuration");
-                const storedTheme = localStorage.getItem("theme");
-                const storedSessionCount = localStorage.getItem("sessionCount");
-                const storedCycleCount = localStorage.getItem("cycleCount");
-                const storedSessionHistory = localStorage.getItem("sessionHistory");
-                const storedMuteState = localStorage.getItem("isMuted");
-
-                if (storedPomodoro) {
-                    pomodoroDuration = parseInt(storedPomodoro);
-                    pomodoroInput.value = pomodoroDuration / 60;
-                }
-                if (storedBreak) {
-                    breakDuration = parseInt(storedBreak);
-                    breakInput.value = breakDuration / 60;
-                }
-                if (storedLongBreak) {
-                    longBreakDuration = parseInt(storedLongBreak);
-                    longBreakInput.value = longBreakDuration / 60;
-                }
-
-                if (storedTheme === "dark") {
-                    document.documentElement.classList.add("dark");
-                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                } else {
-                    document.documentElement.classList.remove("dark");
-                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                }
-
-                if (storedSessionCount) {
-                    sessionCount = parseInt(storedSessionCount);
-                    sessionCountDisplay.textContent = sessionCount;
-                }
-                if (storedCycleCount) {
-                    cycleCount = parseInt(storedCycleCount);
-                }
-                if (storedSessionHistory) {
-                    sessionHistory.innerHTML = storedSessionHistory;
-                }
-                if (storedMuteState) {
-                    isMuted = storedMuteState === "true";
-                    updateMuteButton();
-                }
-            }
-
-            // ----------------------------------------------------------------------
-            // Save Settings to localStorage
-            // ----------------------------------------------------------------------
-            function saveSettings() {
-                localStorage.setItem("pomodoroDuration", pomodoroDuration);
-                localStorage.setItem("breakDuration", breakDuration);
-                localStorage.setItem("longBreakDuration", longBreakDuration);
-                localStorage.setItem("sessionCount", sessionCount);
-                localStorage.setItem("cycleCount", cycleCount);
-                localStorage.setItem("sessionHistory", sessionHistory.innerHTML);
-                localStorage.setItem("isMuted", isMuted);
-            }
-
-            // ----------------------------------------------------------------------
-            // Inputs: Update durations when changed
-            // ----------------------------------------------------------------------
-            pomodoroInput.addEventListener("change", () => {
-                const value = parseInt(pomodoroInput.value);
-                if (value >= 1 && value <= 60) {
-                    pomodoroDuration = value * 60;
-                    localStorage.setItem("pomodoroDuration", pomodoroDuration);
-                    if (isWorkSession) {
-                        resetTimer();
-                    }
-                } else {
-                    alert("Please enter a value between 1 and 60.");
-                    pomodoroInput.value = pomodoroDuration / 60;
-                }
-            });
-
-            breakInput.addEventListener("change", () => {
-                const value = parseInt(breakInput.value);
-                if (value >= 1 && value <= 30) {
-                    breakDuration = value * 60;
-                    localStorage.setItem("breakDuration", breakDuration);
-                    if (!isWorkSession) {
-                        resetTimer();
-                    }
-                } else {
-                    alert("Please enter a value between 1 and 30.");
-                    breakInput.value = breakDuration / 60;
-                }
-            });
-
-            longBreakInput.addEventListener("change", () => {
-                const value = parseInt(longBreakInput.value);
-                if (value >= 1 && value <= 60) {
-                    longBreakDuration = value * 60;
-                    localStorage.setItem("longBreakDuration", longBreakDuration);
-                } else {
-                    alert("Please enter a value between 1 and 60.");
-                    longBreakInput.value = longBreakDuration / 60;
-                }
-            });
-
-            // ----------------------------------------------------------------------
-            // Buttons: Start/Pause, Reset
-            // ----------------------------------------------------------------------
-            startPauseButton.addEventListener("click", () => {
-                if (isRunning) {
-                    pauseTimer();
-                } else {
-                    startTimer();
-                }
-            });
-
-            resetButton.addEventListener("click", resetTimer);
-
-            // ----------------------------------------------------------------------
-            // Timer Functions
-            // ----------------------------------------------------------------------
-            function startTimer() {
-                if (!isRunning) {
-                    isRunning = true;
-                    startPauseButton.innerHTML = '<i class="fas fa-pause mr-2"></i><span>Pause</span>';
-                    timer = setInterval(countdown, 1000);
-                }
-            }
-
-            function pauseTimer() {
-                if (isRunning) {
-                    isRunning = false;
-                    startPauseButton.innerHTML = '<i class="fas fa-play mr-2"></i><span>Start</span>';
-                    clearInterval(timer);
-                }
-            }
-
-            function resetTimer() {
-                pauseTimer();
-                isWorkSession = true;
-                sessionDisplay.textContent = "Work";
-                totalTime = pomodoroDuration;
-                timeLeft = totalTime;
-                updateDisplay();
-                updateProgress();
-            }
-
-            function countdown() {
-                if (timeLeft > 0) {
-                    timeLeft--;
-                    updateDisplay();
-                    updateProgress();
-                } else {
-                    clearInterval(timer);
-                    isRunning = false;
-                    startPauseButton.innerHTML = '<i class="fas fa-play mr-2"></i><span>Start</span>';
-                    switchSession();
-                    notify();
-                }
-            }
-
-            function switchSession() {
-                if (isWorkSession) {
-                    // Work session just ended
-                    sessionCount++;
-                    cycleCount++;
-                    sessionCountDisplay.textContent = sessionCount;
-                    addSessionToHistory("Work");
-                    saveSettings();
-                    if (!isMuted) playSound(workEndSound);
-
-                    // Check if it's time for a long break
-                    if (cycleCount % 4 === 0) {
-                        // Long Break
-                        isWorkSession = false;
-                        sessionDisplay.textContent = "Long Break";
-                        totalTime = longBreakDuration;
-                    } else {
-                        // Short Break
-                        isWorkSession = false;
-                        sessionDisplay.textContent = "Break";
-                        totalTime = breakDuration;
-                    }
-                } else {
-                    // Break session just ended
-                    if (!isMuted) playSound(breakEndSound);
-                    isWorkSession = true;
-                    sessionDisplay.textContent = "Work";
-                    totalTime = pomodoroDuration;
-                }
-
-                timeLeft = totalTime;
-                updateDisplay();
-                updateProgress();
-                startTimer();
-            }
-
-            function updateDisplay() {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                timerDisplay.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-
-                // Update progress circle color based on session type
-                if (isWorkSession) {
-                    progressCircle.setAttribute("stroke", "url(#gradient)");
-                } else if (sessionDisplay.textContent === "Break") {
-                    progressCircle.setAttribute("stroke", "#F59E0B"); // Amber
-                } else if (sessionDisplay.textContent === "Long Break") {
-                    progressCircle.setAttribute("stroke", "#10B981"); // Green
-                }
-            }
-
-            function updateProgress() {
-                const percent = (timeLeft / totalTime) * 100;
-                const offset = 565 * (1 - percent / 100);
-                progressCircle.style.strokeDasharray = `565`;
-                progressCircle.style.strokeDashoffset = offset;
-            }
-
-            // ----------------------------------------------------------------------
-            // Notifications
-            // ----------------------------------------------------------------------
-            function notify() {
-                if (Notification.permission === "granted") {
-                    new Notification(isWorkSession ? "Break Time!" : "Work Time!", {
-                        body: isWorkSession ? "Time to take a break." : "Time to focus!",
-                        icon: "assets/tomato.png",
-                    });
-                }
-            }
-
-            // ----------------------------------------------------------------------
-            // Sound
-            // ----------------------------------------------------------------------
-            function playSound(sound) {
-                sound.currentTime = 0;
-                sound.play();
-            }
-
-            // ----------------------------------------------------------------------
-            // Theme Toggle Button
-            // ----------------------------------------------------------------------
-            themeToggle.addEventListener("click", () => {
-                document.documentElement.classList.toggle("dark");
-                if (document.documentElement.classList.contains("dark")) {
-                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                    localStorage.setItem("theme", "dark");
-                } else {
-                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                    localStorage.setItem("theme", "light");
-                }
-            });
-
-            // ----------------------------------------------------------------------
-            // Mute/Unmute Button
-            // ----------------------------------------------------------------------
-            muteToggle.addEventListener("click", () => {
-                isMuted = !isMuted;
-                updateMuteButton();
-                localStorage.setItem("isMuted", isMuted);
-            });
-
-            function updateMuteButton() {
-                if (isMuted) {
-                    muteToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
-                } else {
-                    muteToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
-                }
-            }
-
-            // ----------------------------------------------------------------------
-            // Session History
-            // ----------------------------------------------------------------------
-            function addSessionToHistory(sessionType) {
-                const li = document.createElement("li");
-                const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                li.className = "text-gray-700 dark:text-gray-200 mb-1";
-                li.textContent = `${timestamp}: Completed a ${sessionType} session.`;
-                sessionHistory.prepend(li);
-
-                // Limit history to last 10 sessions
-                if (sessionHistory.children.length > 10) {
-                    sessionHistory.removeChild(sessionHistory.lastChild);
-                }
-            }
-
-            // ----------------------------------------------------------------------
-            // Info Modal (Open/Close with fade animations)
-            // ----------------------------------------------------------------------
-            infoButton.addEventListener("click", () => {
-                // Show modal
-                infoModal.classList.remove("hidden");
-                infoModal.classList.add("flex");
-
-                // Animate modal content in
-                modalContent.classList.remove("animate-fadeOut");
-                modalContent.classList.add("animate-fadeIn");
-            });
-
-            closeModal.addEventListener("click", closeInfoModal);
-
-            window.addEventListener("click", (e) => {
-                if (e.target === infoModal) {
-                    closeInfoModal();
-                }
-            });
-
-            function closeInfoModal() {
-                // Animate modal content out
-                modalContent.classList.remove("animate-fadeIn");
-                modalContent.classList.add("animate-fadeOut");
-
-                // Wait for fade-out animation to finish, then hide
-                setTimeout(() => {
-                    infoModal.classList.remove("flex");
-                    infoModal.classList.add("hidden");
-                }, 300); // match the animation duration
-            }
-
-            // ----------------------------------------------------------------------
-            // Initialization
-            // ----------------------------------------------------------------------
-            function init() {
-                loadSettings();
-
-                // Set initial time
-                totalTime = pomodoroDuration;
-                timeLeft = totalTime;
-                updateDisplay();
-                updateProgress();
-
-                // Update mute button state
-                updateMuteButton();
-
-                // Request notification permission
-                if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-                    Notification.requestPermission();
-                }
-            }
-
-            init();
-        </script>
+        <script src="src/app.js"></script>
     </body>
 </html>
