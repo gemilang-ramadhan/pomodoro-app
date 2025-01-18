@@ -9,8 +9,13 @@ const pomodoroInput = document.getElementById("pomodoro");
 const breakInput = document.getElementById("break");
 const longBreakInput = document.getElementById("longBreak");
 
+const pomodoroMobile = document.getElementById("pomodoroMobile");
+const breakMobile = document.getElementById("breakMobile");
+const longBreakMobile = document.getElementById("longBreakMobile");
+
 const sessionCountDisplay = document.getElementById("sessionCount");
 const sessionHistory = document.getElementById("sessionHistory");
+const clearHistoryButton = document.getElementById("clearHistoryButton");
 
 const themeToggle = document.getElementById("themeToggle");
 const muteToggle = document.getElementById("muteToggle");
@@ -44,7 +49,9 @@ let isMuted = false;
 const workEndSound = new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3");
 const breakEndSound = new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
 
-// Load Settings from localStorage
+/* =============================
+   Load Settings from localStorage
+   ============================= */
 function loadSettings() {
     const storedPomodoro = localStorage.getItem("pomodoroDuration");
     const storedBreak = localStorage.getItem("breakDuration");
@@ -59,14 +66,17 @@ function loadSettings() {
     if (storedPomodoro) {
         pomodoroDuration = parseInt(storedPomodoro);
         pomodoroInput.value = pomodoroDuration / 60;
+        pomodoroMobile.value = pomodoroInput.value;
     }
     if (storedBreak) {
         breakDuration = parseInt(storedBreak);
         breakInput.value = breakDuration / 60;
+        breakMobile.value = breakInput.value;
     }
     if (storedLongBreak) {
         longBreakDuration = parseInt(storedLongBreak);
         longBreakInput.value = longBreakDuration / 60;
+        longBreakMobile.value = longBreakInput.value;
     }
 
     if (storedTheme === "dark") {
@@ -98,7 +108,9 @@ function loadSettings() {
     }
 }
 
-// Save Settings to localStorage
+/* =============================
+   Save Settings to localStorage
+   ============================= */
 function saveSettings() {
     localStorage.setItem("pomodoroDuration", pomodoroDuration);
     localStorage.setItem("breakDuration", breakDuration);
@@ -109,24 +121,26 @@ function saveSettings() {
     localStorage.setItem("isMuted", isMuted);
 }
 
-// Inputs: Update durations when changed via buttons
-
+/* =============================
+   +/- Buttons for desktop
+   ============================= */
 // Pomodoro
 document.getElementById("increasePomodoro").addEventListener("click", () => {
     if (parseInt(pomodoroInput.value) < 60) {
         pomodoroInput.value = parseInt(pomodoroInput.value) + 1;
         pomodoroDuration = parseInt(pomodoroInput.value) * 60;
+        pomodoroMobile.value = pomodoroInput.value;
         localStorage.setItem("pomodoroDuration", pomodoroDuration);
         if (isWorkSession) {
             resetTimer();
         }
     }
 });
-
 document.getElementById("decreasePomodoro").addEventListener("click", () => {
     if (parseInt(pomodoroInput.value) > 1) {
         pomodoroInput.value = parseInt(pomodoroInput.value) - 1;
         pomodoroDuration = parseInt(pomodoroInput.value) * 60;
+        pomodoroMobile.value = pomodoroInput.value;
         localStorage.setItem("pomodoroDuration", pomodoroDuration);
         if (isWorkSession) {
             resetTimer();
@@ -139,17 +153,18 @@ document.getElementById("increaseBreak").addEventListener("click", () => {
     if (parseInt(breakInput.value) < 30) {
         breakInput.value = parseInt(breakInput.value) + 1;
         breakDuration = parseInt(breakInput.value) * 60;
+        breakMobile.value = breakInput.value;
         localStorage.setItem("breakDuration", breakDuration);
         if (!isWorkSession) {
             resetTimer();
         }
     }
 });
-
 document.getElementById("decreaseBreak").addEventListener("click", () => {
     if (parseInt(breakInput.value) > 1) {
         breakInput.value = parseInt(breakInput.value) - 1;
         breakDuration = parseInt(breakInput.value) * 60;
+        breakMobile.value = breakInput.value;
         localStorage.setItem("breakDuration", breakDuration);
         if (!isWorkSession) {
             resetTimer();
@@ -162,19 +177,66 @@ document.getElementById("increaseLongBreak").addEventListener("click", () => {
     if (parseInt(longBreakInput.value) < 60) {
         longBreakInput.value = parseInt(longBreakInput.value) + 1;
         longBreakDuration = parseInt(longBreakInput.value) * 60;
+        longBreakMobile.value = longBreakInput.value;
         localStorage.setItem("longBreakDuration", longBreakDuration);
     }
 });
-
 document.getElementById("decreaseLongBreak").addEventListener("click", () => {
     if (parseInt(longBreakInput.value) > 1) {
         longBreakInput.value = parseInt(longBreakInput.value) - 1;
         longBreakDuration = parseInt(longBreakInput.value) * 60;
+        longBreakMobile.value = longBreakInput.value;
         localStorage.setItem("longBreakDuration", longBreakDuration);
     }
 });
 
-// Buttons: Start/Pause, Reset
+/* =============================
+   Mobile numeric inputs
+   ============================= */
+pomodoroMobile.addEventListener("input", () => {
+    let val = parseInt(pomodoroMobile.value);
+    if (isNaN(val) || val < 1) val = 1;
+    if (val > 60) val = 60;
+
+    pomodoroMobile.value = val;
+    pomodoroInput.value = val;
+    pomodoroDuration = val * 60;
+    localStorage.setItem("pomodoroDuration", pomodoroDuration);
+
+    if (isWorkSession) {
+        resetTimer();
+    }
+});
+
+breakMobile.addEventListener("input", () => {
+    let val = parseInt(breakMobile.value);
+    if (isNaN(val) || val < 1) val = 1;
+    if (val > 30) val = 30;
+
+    breakMobile.value = val;
+    breakInput.value = val;
+    breakDuration = val * 60;
+    localStorage.setItem("breakDuration", breakDuration);
+
+    if (!isWorkSession) {
+        resetTimer();
+    }
+});
+
+longBreakMobile.addEventListener("input", () => {
+    let val = parseInt(longBreakMobile.value);
+    if (isNaN(val) || val < 1) val = 1;
+    if (val > 60) val = 60;
+
+    longBreakMobile.value = val;
+    longBreakInput.value = val;
+    longBreakDuration = val * 60;
+    localStorage.setItem("longBreakDuration", longBreakDuration);
+});
+
+/* =============================
+   Start/Pause, Reset
+   ============================= */
 startPauseButton.addEventListener("click", () => {
     if (isRunning) {
         pauseTimer();
@@ -182,10 +244,8 @@ startPauseButton.addEventListener("click", () => {
         startTimer();
     }
 });
-
 resetButton.addEventListener("click", resetTimer);
 
-// Timer Functions
 function startTimer() {
     if (!isRunning) {
         isRunning = true;
@@ -228,7 +288,7 @@ function countdown() {
 
 function switchSession() {
     if (isWorkSession) {
-        // Work session just ended
+        // Work session ended
         sessionCount++;
         cycleCount++;
         sessionCountDisplay.textContent = sessionCount;
@@ -236,20 +296,18 @@ function switchSession() {
         saveSettings();
         if (!isMuted) playSound(workEndSound);
 
-        // Check if it's time for a long break
+        // Check if time for a long break
         if (cycleCount % 4 === 0) {
-            // Long Break
             isWorkSession = false;
             sessionDisplay.textContent = "Long Break";
             totalTime = longBreakDuration;
         } else {
-            // Short Break
             isWorkSession = false;
             sessionDisplay.textContent = "Break";
             totalTime = breakDuration;
         }
     } else {
-        // Break session just ended
+        // Break ended
         if (!isMuted) playSound(breakEndSound);
         isWorkSession = true;
         sessionDisplay.textContent = "Work";
@@ -267,7 +325,7 @@ function updateDisplay() {
     const seconds = timeLeft % 60;
     timerDisplay.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
-    // Update progress circle color based on session type
+    // Update progress circle color
     if (isWorkSession) {
         progressCircle.setAttribute("stroke", "url(#gradient)");
     } else if (sessionDisplay.textContent === "Break") {
@@ -284,7 +342,9 @@ function updateProgress() {
     progressCircle.style.strokeDashoffset = offset;
 }
 
-// Notifications
+/* =============================
+   Notifications
+   ============================= */
 function notify() {
     if (Notification.permission === "granted") {
         new Notification(isWorkSession ? "Break Time!" : "Work Time!", {
@@ -294,13 +354,17 @@ function notify() {
     }
 }
 
-// Sound
+/* =============================
+   Sound
+   ============================= */
 function playSound(sound) {
     sound.currentTime = 0;
     sound.play();
 }
 
-// Theme Toggle Button
+/* =============================
+   Theme Toggle
+   ============================= */
 themeToggle.addEventListener("click", () => {
     document.documentElement.classList.toggle("dark");
     if (document.documentElement.classList.contains("dark")) {
@@ -312,7 +376,9 @@ themeToggle.addEventListener("click", () => {
     }
 });
 
-// Mute/Unmute Button
+/* =============================
+   Mute/Unmute
+   ============================= */
 muteToggle.addEventListener("click", () => {
     isMuted = !isMuted;
     updateMuteButton();
@@ -327,23 +393,43 @@ function updateMuteButton() {
     }
 }
 
-// Session History
+/* =============================
+   Session History
+   ============================= */
 function addSessionToHistory(sessionType) {
     const li = document.createElement("li");
     const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    li.className = "text-gray-700 dark:text-gray-200 mb-1";
+    li.className = "text-gray-700 dark:text-gray-200 mb-1 break-words whitespace-normal";
     li.textContent = `${timestamp}: Completed a ${sessionType} session.`;
     sessionHistory.prepend(li);
 
-    // Limit history to last 10 sessions
+    // Limit to last 10 sessions if desired
     if (sessionHistory.children.length > 10) {
         sessionHistory.removeChild(sessionHistory.lastChild);
     }
 }
 
-// Info Modal (Open/Close with fade animations)
+/* =============================
+   Clear Session History
+   ============================= */
+clearHistoryButton.addEventListener("click", () => {
+    // Clear out the sessionHistory list
+    sessionHistory.innerHTML = "";
+    // Reset counters
+    sessionCount = 0;
+    cycleCount = 0;
+    sessionCountDisplay.textContent = 0;
+    // Remove from localStorage
+    localStorage.removeItem("sessionHistory");
+    localStorage.removeItem("sessionCount");
+    localStorage.removeItem("cycleCount");
+});
+
+/* =============================
+   Info Modal (Open/Close)
+   ============================= */
 infoButton.addEventListener("click", () => {
-    // Show modal
+    // Show modal: remove 'hidden', add 'flex'
     infoModal.classList.remove("hidden");
     infoModal.classList.add("flex");
 
@@ -351,7 +437,6 @@ infoButton.addEventListener("click", () => {
     modalContent.classList.remove("animate-fadeOut");
     modalContent.classList.add("animate-fadeIn");
 });
-
 closeModal.addEventListener("click", closeInfoModal);
 
 window.addEventListener("click", (e) => {
@@ -361,18 +446,20 @@ window.addEventListener("click", (e) => {
 });
 
 function closeInfoModal() {
-    // Animate modal content out
+    // Animate out
     modalContent.classList.remove("animate-fadeIn");
     modalContent.classList.add("animate-fadeOut");
 
-    // Wait for fade-out animation to finish, then hide
+    // Wait for fade-out, then hide
     setTimeout(() => {
         infoModal.classList.remove("flex");
         infoModal.classList.add("hidden");
-    }, 300); // match the animation duration
+    }, 300);
 }
 
-// To-Do List Functions
+/* =============================
+   To-Do List
+   ============================= */
 // Add Task
 addTaskButton.addEventListener("click", addTask);
 newTaskInput.addEventListener("keypress", (e) => {
@@ -393,32 +480,47 @@ function addTask() {
 
 function addTaskToDOM(text, id, completed) {
     const li = document.createElement("li");
-    li.className = "flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-3 rounded-md mb-2";
+    li.className = "flex items-start justify-between bg-gray-100 dark:bg-gray-700 p-3 rounded-md mb-2 break-words";
+
     li.setAttribute("data-id", id);
+
+    // Container for checkbox and task text
+    const taskContainer = document.createElement("div");
+    taskContainer.className = "flex items-start flex-1";
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = completed;
-    checkbox.className = "mr-2";
+    checkbox.className = "mt-1 mr-3 h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500";
 
     const span = document.createElement("span");
     span.textContent = text;
-    span.className = completed ? "line-through text-gray-500 dark:text-gray-400 flex-1" : "flex-1 text-gray-700 dark:text-gray-200";
+    span.className = completed
+        ? "line-through text-gray-500 dark:text-gray-400 break-words whitespace-normal flex-1"
+        : "text-gray-700 dark:text-gray-200 break-words whitespace-normal flex-1";
+
+    taskContainer.appendChild(checkbox);
+    taskContainer.appendChild(span);
+
+    // Container for action buttons
+    const actionButtons = document.createElement("div");
+    actionButtons.className = "flex space-x-2 mt-1";
 
     const editButton = document.createElement("button");
-    editButton.className = "text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-600 focus:outline-none mr-2";
+    editButton.className = "text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-600 focus:outline-none p-1 rounded-full transition-transform duration-200 transform hover:scale-110 action-btn";
     editButton.innerHTML = '<i class="fas fa-edit"></i>';
     editButton.addEventListener("click", () => editTask(id));
 
     const deleteButton = document.createElement("button");
-    deleteButton.className = "text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-600 focus:outline-none";
+    deleteButton.className = "text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-600 focus:outline-none p-1 rounded-full transition-transform duration-200 transform hover:scale-110 action-btn";
     deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
     deleteButton.addEventListener("click", () => deleteTask(id));
 
-    li.appendChild(checkbox);
-    li.appendChild(span);
-    li.appendChild(editButton);
-    li.appendChild(deleteButton);
+    actionButtons.appendChild(editButton);
+    actionButtons.appendChild(deleteButton);
+
+    li.appendChild(taskContainer);
+    li.appendChild(actionButtons);
 
     taskList.appendChild(li);
 }
@@ -431,13 +533,15 @@ function editTask(id) {
     const input = document.createElement("input");
     input.type = "text";
     input.value = currentText;
-    input.className = "flex-1 p-1 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none dark:bg-gray-700 dark:text-white";
+    input.className = "flex-1 p-1 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none dark:bg-gray-700 dark:text-white mr-2";
+
     li.insertBefore(input, span);
     li.removeChild(span);
 
     const editButton = li.querySelector(".fa-edit").parentElement;
     editButton.innerHTML = '<i class="fas fa-save"></i>';
-    // Remove existing click listener
+
+    // Remove existing listener
     editButton.replaceWith(editButton.cloneNode(true));
     const newEditButton = li.querySelector(".fa-save").parentElement;
     newEditButton.addEventListener("click", () => saveTask(id, input.value));
@@ -450,14 +554,15 @@ function saveTask(id, newText) {
     const input = li.querySelector("input[type='text']");
     const span = document.createElement("span");
     span.textContent = newText;
-    span.className = "flex-1 text-gray-700 dark:text-gray-200";
+    span.className = "flex-1 text-gray-700 dark:text-gray-200 break-words whitespace-normal mr-2";
 
     li.insertBefore(span, input);
     li.removeChild(input);
 
     const editButton = li.querySelector(".fa-save").parentElement;
     editButton.innerHTML = '<i class="fas fa-edit"></i>';
-    // Remove existing click listener
+
+    // Remove existing listener
     editButton.replaceWith(editButton.cloneNode(true));
     const newEditButton = li.querySelector(".fa-edit").parentElement;
     newEditButton.addEventListener("click", () => editTask(id));
@@ -488,19 +593,24 @@ taskList.addEventListener("change", (e) => {
     }
 });
 
-// Save Tasks to localStorage
+/* =============================
+   Save Tasks to localStorage
+   ============================= */
 function saveTasksToLocalStorage() {
     const tasks = [];
     taskList.querySelectorAll("li").forEach((li) => {
         const id = li.getAttribute("data-id");
-        const text = li.querySelector("span") ? li.querySelector("span").textContent : li.querySelector("input[type='text']").value;
+        const textElement = li.querySelector("span") || li.querySelector("input[type='text']");
+        const text = textElement ? textElement.textContent : "";
         const completed = li.querySelector("input[type='checkbox']").checked;
         tasks.push({ id, text, completed });
     });
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-// Initialize SortableJS for Drag-and-Drop
+/* =============================
+   Initialize SortableJS
+   ============================= */
 new Sortable(taskList, {
     animation: 150,
     ghostClass: "bg-gray-200 dark:bg-gray-600",
@@ -509,7 +619,9 @@ new Sortable(taskList, {
     },
 });
 
-// Initialization
+/* =============================
+   init()
+   ============================= */
 function init() {
     loadSettings();
 

@@ -2,3 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom Styles */
+
+/* Session History & Task List Overflow */
+#sessionHistory {
+    @apply max-h-40 overflow-y-auto break-words;
+}
+
+#taskList {
+    @apply max-h-96 overflow-y-auto break-words;
+}
+
+/* Scrollbar Styles */
+#sessionHistory::-webkit-scrollbar,
+#taskList::-webkit-scrollbar {
+    width: 8px;
+}
+
+#sessionHistory::-webkit-scrollbar-thumb,
+#taskList::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded;
+}
+
+#sessionHistory::-webkit-scrollbar-thumb:hover,
+#taskList::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-700;
+}
+
+/* Timer SVG Responsive */
+.timer-svg {
+    @apply w-52 h-52;
+}
+
+@media (max-width: 768px) {
+    .timer-svg {
+        @apply opacity-0;
+    }
+}
+
+/* Keyframes for Animations */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+
+/* Animation Classes */
+.animate-fadeIn {
+    animation: fadeIn 0.3s forwards;
+}
+.animate-fadeOut {
+    animation: fadeOut 0.3s forwards;
+}
+
+/* Custom Checkbox Styles using Tailwind Variants */
+input[type="checkbox"]:checked {
+    @apply bg-indigo-600 border-transparent;
+}
+input[type="checkbox"]:focus {
+    @apply ring-2 ring-indigo-500;
+}
