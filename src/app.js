@@ -481,12 +481,11 @@ function addTask() {
 function addTaskToDOM(text, id, completed) {
     const li = document.createElement("li");
     li.className = "flex items-start justify-between bg-gray-100 dark:bg-gray-700 p-3 rounded-md mb-2 break-words";
-
     li.setAttribute("data-id", id);
 
     // Container for checkbox and task text
     const taskContainer = document.createElement("div");
-    taskContainer.className = "flex items-start flex-1";
+    taskContainer.className = "flex items-start flex-1 min-w-0";
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -495,9 +494,7 @@ function addTaskToDOM(text, id, completed) {
 
     const span = document.createElement("span");
     span.textContent = text;
-    span.className = completed
-        ? "line-through text-gray-500 dark:text-gray-400 break-words whitespace-normal flex-1"
-        : "text-gray-700 dark:text-gray-200 break-words whitespace-normal flex-1";
+    span.className = completed ? "line-through text-gray-500 dark:text-gray-400 break-words whitespace-normal flex-1 min-w-0" : "text-gray-700 dark:text-gray-200 break-words whitespace-normal flex-1 min-w-0";
 
     taskContainer.appendChild(checkbox);
     taskContainer.appendChild(span);
@@ -544,26 +541,27 @@ function editTask(id) {
     // Remove existing listener
     editButton.replaceWith(editButton.cloneNode(true));
     const newEditButton = li.querySelector(".fa-save").parentElement;
-    newEditButton.addEventListener("click", () => saveTask(id, input.value));
+    newEditButton.addEventListener("click", () => saveTask(id));
 }
 
-function saveTask(id, newText) {
-    if (newText.trim() === "") return;
-
+function saveTask(id) {
     const li = document.querySelector(`li[data-id="${id}"]`);
     const input = li.querySelector("input[type='text']");
+    const newText = input.value.trim();
+    if (newText === "") return;
+
     const span = document.createElement("span");
     span.textContent = newText;
-    span.className = "flex-1 text-gray-700 dark:text-gray-200 break-words whitespace-normal mr-2";
+    span.className = "flex-1 text-gray-700 dark:text-gray-200 break-words whitespace-normal flex-1 min-w-0";
 
     li.insertBefore(span, input);
     li.removeChild(input);
 
-    const editButton = li.querySelector(".fa-save").parentElement;
-    editButton.innerHTML = '<i class="fas fa-edit"></i>';
+    const saveButton = li.querySelector(".fa-save").parentElement;
+    saveButton.innerHTML = '<i class="fas fa-edit"></i>';
 
-    // Remove existing listener
-    editButton.replaceWith(editButton.cloneNode(true));
+    // Remove existing listener and add 'edit' listener
+    saveButton.replaceWith(saveButton.cloneNode(true));
     const newEditButton = li.querySelector(".fa-edit").parentElement;
     newEditButton.addEventListener("click", () => editTask(id));
 

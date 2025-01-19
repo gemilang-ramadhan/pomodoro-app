@@ -77,3 +77,8 @@ input[type="checkbox"]:checked {
 input[type="checkbox"]:focus {
     @apply ring-2 ring-indigo-500;
 }
+
+/* To-Do List Text Wrapping */
+li span {
+    @apply break-words whitespace-normal min-w-0;
+}

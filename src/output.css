@@ -679,6 +679,10 @@ video {
   width: 100%;
 }
 
+.min-w-0 {
+  min-width: 0px;
+}
+
 .max-w-5xl {
   max-width: 64rem;
 }
@@ -1190,6 +1194,14 @@ input[type="checkbox"]:focus {
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(99 102 241 / var(--tw-ring-opacity, 1));
+}
+
+/* To-Do List Text Wrapping */
+
+li span {
+  min-width: 0px;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .hover\:scale-105:hover {
