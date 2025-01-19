@@ -41,7 +41,7 @@ let breakDuration = parseInt(breakInput.value) * 60; // in seconds
 let longBreakDuration = parseInt(longBreakInput.value) * 60; // in seconds
 
 let sessionCount = 0; // number of completed work sessions
-let cycleCount = 0; // tracks how many work sessions have happened consecutively
+let cycleCount = 0; // tracks consecutive work sessions
 
 let isMuted = false;
 
@@ -122,9 +122,8 @@ function saveSettings() {
 }
 
 /* =============================
-   +/- Buttons for desktop
+   +/- Buttons for Desktop
    ============================= */
-// Pomodoro
 document.getElementById("increasePomodoro").addEventListener("click", () => {
     if (parseInt(pomodoroInput.value) < 60) {
         pomodoroInput.value = parseInt(pomodoroInput.value) + 1;
@@ -136,6 +135,55 @@ document.getElementById("increasePomodoro").addEventListener("click", () => {
         }
     }
 });
+
+/* =============================
+   Event Listeners for Desktop Numeric Inputs
+   ============================= */
+
+// Pomodoro Duration - Desktop
+pomodoroInput.addEventListener("input", () => {
+    let val = parseInt(pomodoroInput.value);
+    if (isNaN(val) || val < 1) val = 1;
+    if (val > 60) val = 60;
+
+    pomodoroInput.value = val;
+    pomodoroMobile.value = val;
+    pomodoroDuration = val * 60;
+    localStorage.setItem("pomodoroDuration", pomodoroDuration);
+
+    if (isWorkSession) {
+        resetTimer();
+    }
+});
+
+// Break Duration - Desktop
+breakInput.addEventListener("input", () => {
+    let val = parseInt(breakInput.value);
+    if (isNaN(val) || val < 1) val = 1;
+    if (val > 30) val = 30;
+
+    breakInput.value = val;
+    breakMobile.value = val;
+    breakDuration = val * 60;
+    localStorage.setItem("breakDuration", breakDuration);
+
+    if (!isWorkSession) {
+        resetTimer();
+    }
+});
+
+// Long Break Duration - Desktop
+longBreakInput.addEventListener("input", () => {
+    let val = parseInt(longBreakInput.value);
+    if (isNaN(val) || val < 1) val = 1;
+    if (val > 60) val = 60;
+
+    longBreakInput.value = val;
+    longBreakMobile.value = val;
+    longBreakDuration = val * 60;
+    localStorage.setItem("longBreakDuration", longBreakDuration);
+});
+
 document.getElementById("decreasePomodoro").addEventListener("click", () => {
     if (parseInt(pomodoroInput.value) > 1) {
         pomodoroInput.value = parseInt(pomodoroInput.value) - 1;
@@ -191,7 +239,7 @@ document.getElementById("decreaseLongBreak").addEventListener("click", () => {
 });
 
 /* =============================
-   Mobile numeric inputs
+   Mobile Numeric Inputs
    ============================= */
 pomodoroMobile.addEventListener("input", () => {
     let val = parseInt(pomodoroMobile.value);
@@ -296,7 +344,7 @@ function switchSession() {
         saveSettings();
         if (!isMuted) playSound(workEndSound);
 
-        // Check if time for a long break
+        // Every 4 work sessions -> Long Break
         if (cycleCount % 4 === 0) {
             isWorkSession = false;
             sessionDisplay.textContent = "Long Break";
@@ -398,8 +446,11 @@ function updateMuteButton() {
    ============================= */
 function addSessionToHistory(sessionType) {
     const li = document.createElement("li");
-    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    li.className = "text-gray-700 dark:text-gray-200 mb-1 break-words whitespace-normal";
+    const timestamp = new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+    li.className = "text-gray-700 dark:text-gray-200 mb-1 break-words whitespace-normal animate-fadeIn";
     li.textContent = `${timestamp}: Completed a ${sessionType} session.`;
     sessionHistory.prepend(li);
 
@@ -409,17 +460,11 @@ function addSessionToHistory(sessionType) {
     }
 }
 
-/* =============================
-   Clear Session History
-   ============================= */
 clearHistoryButton.addEventListener("click", () => {
-    // Clear out the sessionHistory list
     sessionHistory.innerHTML = "";
-    // Reset counters
     sessionCount = 0;
     cycleCount = 0;
     sessionCountDisplay.textContent = 0;
-    // Remove from localStorage
     localStorage.removeItem("sessionHistory");
     localStorage.removeItem("sessionCount");
     localStorage.removeItem("cycleCount");
@@ -450,7 +495,7 @@ function closeInfoModal() {
     modalContent.classList.remove("animate-fadeIn");
     modalContent.classList.add("animate-fadeOut");
 
-    // Wait for fade-out, then hide
+    // Shortened fade-out
     setTimeout(() => {
         infoModal.classList.remove("flex");
         infoModal.classList.add("hidden");
@@ -460,7 +505,6 @@ function closeInfoModal() {
 /* =============================
    To-Do List
    ============================= */
-// Add Task
 addTaskButton.addEventListener("click", addTask);
 newTaskInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
@@ -480,38 +524,39 @@ function addTask() {
 
 function addTaskToDOM(text, id, completed) {
     const li = document.createElement("li");
-    li.className = "flex items-start justify-between bg-gray-100 dark:bg-gray-700 p-3 rounded-md mb-2 break-words";
+    // Note the classes for each <li> to allow smoother reflow
+    li.className = "flex items-center justify-between bg-white dark:bg-darkCard p-3 rounded-md mb-2 break-words " + "transition-transform duration-200 ease-in-out hover:scale-105 " + "animate-slideDown"; // new item slides down quickly
     li.setAttribute("data-id", id);
 
-    // Container for checkbox and task text
+    // Container for checkbox + text
     const taskContainer = document.createElement("div");
-    taskContainer.className = "flex items-start flex-1 min-w-0";
+    taskContainer.className = "flex items-center flex-1 min-w-0";
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = completed;
-    checkbox.className = "mt-1 mr-3 h-5 w-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500";
+    checkbox.className = "h-6 w-6 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 transition";
 
     const span = document.createElement("span");
     span.textContent = text;
-    span.className = completed ? "line-through text-gray-500 dark:text-gray-400 break-words whitespace-normal flex-1 min-w-0" : "text-gray-700 dark:text-gray-200 break-words whitespace-normal flex-1 min-w-0";
+    span.className = completed ? "line-through text-gray-500 dark:text-gray-400 ml-3 flex-1 min-w-0" : "text-gray-700 dark:text-gray-200 ml-3 flex-1 min-w-0";
 
     taskContainer.appendChild(checkbox);
     taskContainer.appendChild(span);
 
-    // Container for action buttons
+    // Action buttons
     const actionButtons = document.createElement("div");
-    actionButtons.className = "flex space-x-2 mt-1";
+    actionButtons.className = "flex space-x-2 ml-4";
 
     const editButton = document.createElement("button");
-    editButton.className = "text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-600 focus:outline-none p-1 rounded-full transition-transform duration-200 transform hover:scale-110 action-btn";
+    editButton.className = "text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-600 " + "focus:outline-none p-2 rounded-full transition transform duration-200 ease-in-out hover:scale-110 action-btn";
     editButton.innerHTML = '<i class="fas fa-edit"></i>';
-    editButton.addEventListener("click", () => editTask(id));
+    editButton.onclick = () => editTask(id);
 
     const deleteButton = document.createElement("button");
-    deleteButton.className = "text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-600 focus:outline-none p-1 rounded-full transition-transform duration-200 transform hover:scale-110 action-btn";
+    deleteButton.className = "text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-600 " + "focus:outline-none p-2 rounded-full transition transform duration-200 ease-in-out hover:scale-110 action-btn";
     deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
-    deleteButton.addEventListener("click", () => deleteTask(id));
+    deleteButton.onclick = () => deleteTask(id);
 
     actionButtons.appendChild(editButton);
     actionButtons.appendChild(deleteButton);
@@ -519,65 +564,73 @@ function addTaskToDOM(text, id, completed) {
     li.appendChild(taskContainer);
     li.appendChild(actionButtons);
 
-    taskList.appendChild(li);
+    taskList.prepend(li);
 }
 
-// Edit Task
 function editTask(id) {
     const li = document.querySelector(`li[data-id="${id}"]`);
+    if (!li) return;
+
     const span = li.querySelector("span");
     const currentText = span.textContent;
+
     const input = document.createElement("input");
     input.type = "text";
     input.value = currentText;
-    input.className = "flex-1 p-1 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none dark:bg-gray-700 dark:text-white mr-2";
+    input.className = "flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none " + "dark:bg-gray-700 dark:text-white mr-2";
 
     li.insertBefore(input, span);
     li.removeChild(span);
 
-    const editButton = li.querySelector(".fa-edit").parentElement;
-    editButton.innerHTML = '<i class="fas fa-save"></i>';
-
-    // Remove existing listener
-    editButton.replaceWith(editButton.cloneNode(true));
-    const newEditButton = li.querySelector(".fa-save").parentElement;
-    newEditButton.addEventListener("click", () => saveTask(id));
+    // Switch the edit button to save mode
+    const editButton = li.querySelector(".fa-edit")?.parentElement;
+    if (editButton) {
+        editButton.innerHTML = '<i class="fas fa-save"></i>';
+        editButton.onclick = () => saveTask(id);
+    }
 }
 
 function saveTask(id) {
     const li = document.querySelector(`li[data-id="${id}"]`);
+    if (!li) return;
+
     const input = li.querySelector("input[type='text']");
     const newText = input.value.trim();
     if (newText === "") return;
 
     const span = document.createElement("span");
     span.textContent = newText;
-    span.className = "flex-1 text-gray-700 dark:text-gray-200 break-words whitespace-normal flex-1 min-w-0";
+    span.className = isTaskCompleted(li) ? "line-through text-gray-500 dark:text-gray-400 ml-3 flex-1 min-w-0" : "text-gray-700 dark:text-gray-200 ml-3 flex-1 min-w-0";
 
     li.insertBefore(span, input);
     li.removeChild(input);
 
-    const saveButton = li.querySelector(".fa-save").parentElement;
-    saveButton.innerHTML = '<i class="fas fa-edit"></i>';
-
-    // Remove existing listener and add 'edit' listener
-    saveButton.replaceWith(saveButton.cloneNode(true));
-    const newEditButton = li.querySelector(".fa-edit").parentElement;
-    newEditButton.addEventListener("click", () => editTask(id));
+    // Switch the save button back to edit
+    const saveButton = li.querySelector(".fa-save")?.parentElement;
+    if (saveButton) {
+        saveButton.innerHTML = '<i class="fas fa-edit"></i>';
+        saveButton.onclick = () => editTask(id);
+    }
 
     saveTasksToLocalStorage();
 }
 
-// Delete Task
 function deleteTask(id) {
     const li = document.querySelector(`li[data-id="${id}"]`);
-    if (li) {
+    if (!li) return;
+
+    // Remove any existing "slideDown" so it won't conflict
+    li.classList.remove("animate-slideDown");
+    // Add our swipe-left animation
+    li.classList.add("animate-swipeLeft");
+
+    // After animation ends, remove from DOM
+    setTimeout(() => {
         li.remove();
         saveTasksToLocalStorage();
-    }
+    }, 200); // match the .2s we set in CSS
 }
 
-// Toggle Task Completion
 taskList.addEventListener("change", (e) => {
     if (e.target.matches("input[type='checkbox']")) {
         const li = e.target.closest("li");
@@ -590,6 +643,11 @@ taskList.addEventListener("change", (e) => {
         saveTasksToLocalStorage();
     }
 });
+
+function isTaskCompleted(li) {
+    const checkbox = li.querySelector("input[type='checkbox']");
+    return checkbox.checked;
+}
 
 /* =============================
    Save Tasks to localStorage
@@ -629,10 +687,7 @@ function init() {
     updateDisplay();
     updateProgress();
 
-    // Update mute button state
-    updateMuteButton();
-
-    // Request notification permission
+    // Ask for Notification permission if not denied
     if (Notification.permission !== "granted" && Notification.permission !== "denied") {
         Notification.requestPermission();
     }

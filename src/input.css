@@ -2,83 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Styles */
-
 /* Session History & Task List Overflow */
 #sessionHistory {
-    @apply max-h-40 overflow-y-auto break-words;
+  @apply max-h-40 overflow-y-auto break-words;
 }
-
 #taskList {
-    @apply max-h-96 overflow-y-auto break-words;
+  @apply max-h-96 overflow-y-auto break-words;
 }
 
-/* Scrollbar Styles */
+/* Scrollbar Styles using tailwind-scrollbar plugin */
 #sessionHistory::-webkit-scrollbar,
 #taskList::-webkit-scrollbar {
-    width: 8px;
+  @apply w-2;
 }
-
 #sessionHistory::-webkit-scrollbar-thumb,
 #taskList::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 dark:bg-gray-600 rounded;
+  @apply bg-gray-300 dark:bg-gray-600 rounded;
 }
-
 #sessionHistory::-webkit-scrollbar-thumb:hover,
 #taskList::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400 dark:bg-gray-700;
+  @apply bg-gray-400 dark:bg-gray-700;
 }
 
-/* Timer SVG Responsive */
+/* Timer SVG Responsiveness */
 .timer-svg {
-    @apply w-52 h-52;
+  @apply w-52 h-52;
 }
-
 @media (max-width: 768px) {
-    .timer-svg {
-        @apply opacity-0;
-    }
+  .timer-svg {
+    @apply opacity-0;
+  }
 }
 
-/* Keyframes for Animations */
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-@keyframes fadeOut {
-    0% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(0.9);
-    }
+/* Our custom animations are defined in tailwind.config.js;
+   here we simply use the .animate- classes. */
+
+/* Additional Utility: smooth transitions for <li> position changes */
+#taskList li {
+  /* Already adding transition in the JS, but you can do it here as well. */
+  @apply transition-transform duration-200 ease-in-out;
 }
 
-/* Animation Classes */
-.animate-fadeIn {
-    animation: fadeIn 0.3s forwards;
-}
-.animate-fadeOut {
-    animation: fadeOut 0.3s forwards;
+/* Modal Content Shadow */
+#modalContent {
+  @apply shadow-lg;
 }
 
-/* Custom Checkbox Styles using Tailwind Variants */
+/* Task List Item Hover Effect */
+#taskList li:hover {
+  @apply bg-gray-200 dark:bg-gray-600 transform scale-105;
+}
+
+/* Input Focus Effects */
+input:focus {
+  @apply ring-2 ring-primary;
+}
+
+/* Custom Checkbox Styles */
 input[type="checkbox"]:checked {
-    @apply bg-indigo-600 border-transparent;
+  @apply bg-indigo-600 border-transparent;
 }
 input[type="checkbox"]:focus {
-    @apply ring-2 ring-indigo-500;
+  @apply ring-2 ring-indigo-500;
 }
 
-/* To-Do List Text Wrapping */
-li span {
-    @apply break-words whitespace-normal min-w-0;
+/* Hide number input spinners for Chrome, Safari, Edge, and Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide number input spinners for Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

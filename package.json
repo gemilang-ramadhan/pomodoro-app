@@ -3,6 +3,9 @@
     "tailwindcss": "^3.4.17"
   },
   "scripts": {
-    "dev":"npx tailwindcss -i ./src/input.css -o ./src/output.css --watch"
+    "dev": "npx tailwindcss -i ./src/input.css -o ./src/output.css --watch"
+  },
+  "dependencies": {
+    "tailwind-scrollbar": "^3.1.0"
   }
 }
